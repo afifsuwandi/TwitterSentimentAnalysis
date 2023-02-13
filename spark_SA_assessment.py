@@ -3,7 +3,7 @@ from pyspark import SparkConf, SparkContext
 import re
 
 
-
+#Convert abbreviation to full text
 def abb_en(line):
    abbreviation_en = {
     'u': 'you',
@@ -16,6 +16,7 @@ def abb_en(line):
    abbrev = ' '.join (abbreviation_en.get(word, word) for word in line.split())
    return (abbrev)
 
+#Remove unnecessary text
 def remove_features(data_str):
    
     url_re = re.compile(r'https?://(www.)?\w+\.\w+(/\w+)*/?')    
@@ -32,7 +33,7 @@ def remove_features(data_str):
     return data_str
 
    
- 
+#Set polarity range from TextBlob library
 def polarity(value):
     
     if value > 0:
@@ -42,10 +43,8 @@ def polarity(value):
     else:
         return "neu"
 
-
-#.filter(lambda x:len(x)==8)\
    
-#Write your main function here
+#Main function
 def main(sc, filename):
     
     data = sc.textFile(filename)\
@@ -66,16 +65,9 @@ def main(sc, filename):
       
     
     data_zip = data.zip(data_raw).map(lambda x:str(x).replace("'","").replace('"',""))
-    
-    #print (data.take(3))
-    #print (data_raw.take(4))
-    #print (data_zip.take(4))
-   
-   
-
     data_zip.saveAsTextFile("DE22C04_Afif")
    
-
+#Specify no. of threads and AppName
 if __name__ == "__main__":
     
     conf = SparkConf().setMaster("local[1]").setAppName("DE22C04_Test_Afif")
